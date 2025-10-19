@@ -1,0 +1,17 @@
+/* app/globals.css */
+
+/* ✅ This single import enables TailwindCSS styles */
+@import "tailwindcss";
+
+/* --- optional small tweaks --- */
+html, body, #__next {
+  height: 100%;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply antialiased bg-slate-950 text-white;
+}
