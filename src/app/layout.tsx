@@ -8,6 +8,7 @@ import type { Metadata } from "next"; // بنستورد نوع Metadata علشا
 import { Geist } from "next/font/google"; // بنستورد فونت Google جاهز بالطريقة الجديدة بتاعة Next
 import "./globals.css"; // 👈 هنا الإضافة المهمة: بتفعّل Tailwind + الستايل العام للتطبيق
 import Providers from "./providers"; // Wrapper هيمد الصفحات بالـ AuthProvider
+import AppShell from "@/app/components/AppShell";
 
 // بنكوّن نسخة من الفونت Geist ونحطها في متغيّر CSS علشان نستخدمه في body
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* body: بنحط فيه متغيّر الخط + antialiased لنعومة النصوص */}
       <body className={`${geistSans.variable} antialiased`}>
         {/* Providers: هنا بنحط AuthProvider حوالين كل الصفحات علشان useAuth تشتغل */}
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );

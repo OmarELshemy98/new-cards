@@ -326,11 +326,11 @@ export default function BusinessCards() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-white/70">Template<span className="text-red-400"> *</span></label>
                 <select
-                  disabled={modalMode === "view"}
-                  value={form.template}
-                onChange={(e) => setForm(f => ({ ...f, template: e.target.value as TemplateType | "" }))}
-                  className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm outline-none focus:border-cyan-400"
-                >
+  value={companyFilter}
+  onChange={(e) => setCompanyFilter(e.target.value)}
+  className="w-full sm:w-[40%] h-8 rounded-md border border-white/15  px-2 py-1 text-xs text-black outline-none focus:border-cyan-400"
+>
+
                   <option value="">Select template</option>
                   <option value="medyour">medyour</option>
                   <option value="axiom">axiom</option>
