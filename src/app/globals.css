@@ -1,17 +1,21 @@
-/* app/globals.css */
+/* 
+  الملف ده مسؤول عن تفعيل TailwindCSS وعن شوية ستايلات عامة بسيطة على مستوى التطبيق.
+*/
 
-/* ✅ This single import enables TailwindCSS styles */
+/* ✅ السطر ده لوحده بيشغّل Tailwind (عبر PostCSS config): utilities/components/... */
 @import "tailwindcss";
 
-/* --- optional small tweaks --- */
+/* نخلي ارتفاع html/body/#__next ياخدوا طول الشاشة كله */
 html, body, #__next {
   height: 100%;
 }
 
+/* نحدد إن التطبيق يشغّل مظهر داكن افتراضيًا للمتصفح */
 :root {
   color-scheme: dark;
 }
 
+/* بنطبّق شوية كلاسات Tailwind على الـ body: anti-alias + خلفية داكنة + نص أبيض */
 body {
   @apply antialiased bg-slate-950 text-white;
 }
