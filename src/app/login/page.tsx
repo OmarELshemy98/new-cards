@@ -332,7 +332,7 @@ function Spinner() {
 // نقطة صغيرة للزينة
 function Dot() {
   return (
-    <span className="inline-block ه-2 w-2 rounded-full bg-cyan-300 shadow shadow-cyan-200/40" />
+<span className="inline-block h-2 w-2 rounded-full bg-cyan-300 shadow shadow-cyan-200/40" />
   );
 }
 

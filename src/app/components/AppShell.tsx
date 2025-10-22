@@ -1,55 +1,52 @@
-// ده الكود بتاع ال sidemenu الموجوده ف الجمب 
-"use client"; 
-import { useState, useMemo } from "react";                       // نستورد هوكس React للتحكم في الستيت (useState) وتحسين الاداء (useMemo)
-import { usePathname, useRouter } from "next/navigation";         // هوكس من Next.js للوصول للمسار الحالي والراوتر
-import Link from "next/link";                                     // عشان نعمل روابط تنقل بين الصفحات بدون ريفريش
-import { useAuth } from "@/hooks/useAuth";                        // هوك مخصص للاستعلام عن حالة المستخدم (مين اللي دخل)
-import { signOut } from "firebase/auth";                          // دالة تسجيل الخروج من Firebase Auth
-import { auth } from "@/firebaseConfig";                          // إعدادات الفايربيز
+// app/components/AppShell.tsx
+// ده الكود المسؤول عن الـ Sidebar + هيكل التطبيق العام (App Shell)
+
+"use client";
+
+import { useState } from "react"; // ✔️ شلنا useMemo لأنه غير لازم هنا
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  // اخذنا من هوك الأوث: المستخدم الحالي ولو أدمن ولا لا
+  // حالة المستخدم وصلاحياته
   const { user, isAdmin } = useAuth();
 
-  // المسار الحالي في الموقع (مثلا: /dashboard)
+  // مسار الصفحة الحالي + الراوتر
   const pathname = usePathname();
-
-  // الراوتر، علشان نعمل تحويل للصفحات
   const router = useRouter();
 
-  // حالة فتح السايدبار في الموبايل (true/false)
+  // فتح/غلق السايدبار (موبايل)
   const [open, setOpen] = useState(false);
 
-  // لو على صفحة اللوجين، نخفي السايدبار
+  // هل نخفي السايدبار (صفحة /login)؟
   const hideSidebar = pathname?.startsWith("/login");
 
-  // قائمة الروابط الجانبية (Dashboard, Users, Business Cards)
-  // لو الادمن بس يشوف لينك "Users"
-  const nav = useMemo(
-    () =>
-      [
-        { label: "Dashboard", href: "/dashboard", adminOnly: false }, // يظهر للكل
-        { label: "Users", href: "/users", adminOnly: true },         // يظهر للأدمن فقط
-        { label: "Business Cards", href: "/business-cards", adminOnly: false }, // يظهر للكل (وضح انه كان فيه خطأ مطبعي في الكود الاصلي buisness-cards عدلناها)
-      ] as const,
-    []
-  );
+  // ✅ حسب طلبك: لو مش في /login ومفيش يوزر -> منرجّعش أي UI
+  if (!hideSidebar && !user) return null;
 
-  // عند الضغط على زرار Logout 
+  // ✅ روابط السايدبار ثابتة (مش محتاجة useMemo)
+  const nav = [
+    { label: "Dashboard", href: "/dashboard", adminOnly: false },
+    { label: "Users", href: "/users", adminOnly: true },
+    { label: "Business Cards", href: "/business-cards", adminOnly: false },
+  ] as const;
+
   async function onLogout() {
-    await signOut(auth);                  // تسجيل خروج من فايربيز
-    router.replace("/login");             // تحويل على صفحة اللوجين
+    await signOut(auth);
+    router.replace("/login");
   }
 
-  // لو بنخفي السايدبار (يعني احنا في /login) نعرض بس الأطفال (المحتوى اللي جاي)
+  // لو إحنا على /login: ما تعرضش السايدبار، فقط المحتوى (صفحة اللوجين)
   if (hideSidebar) return <>{children}</>;
 
-  // لو مش في صفحة اللوجين: نعرض الهيكل كامل (سايدبار + محتوى + زر المينيو)
   return (
     <div className="min-h-dvh">
-      {/* زر فتح السايدبار في الموبايل */}
+      {/* زر فتح السايدبار للموبايل */}
       <button
-        onClick={() => setOpen(s => !s)}                                       // عند الضغط يقلب حالة الفتح/الغلق
+        onClick={() => setOpen((s) => !s)}
         className="md:hidden fixed top-3 left-3 z-50 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm"
         aria-expanded={open}
         aria-controls="sidebar"
@@ -57,29 +54,29 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Menu
       </button>
 
-      {/* السايدبار (الشريط الجانبي) */}
+      {/* السايدبار */}
       <aside
         id="sidebar"
         className={[
-          "fixed z-40 top-0 left-0 h-full w-64",                  // موقعه وحجمه
-          "border-r border-white/10 bg-slate-900/70 backdrop-blur", // شكله والالوان
-          "transition-transform duration-200",                      // انيمشن للفتح والغلق
-          open ? "translate-x-0" : "-translate-x-full md:translate-x-0", // مخفي ولا ظاهر حسب الحالة والمقاس
+          "fixed z-40 top-0 left-0 h-full w-64",
+          "border-r border-white/10 bg-slate-900/70 backdrop-blur",
+          "transition-transform duration-200",
+          open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         ].join(" ")}
       >
-        {/* مربع الترحيب وأيميل المستخدم */}
+        {/* هيدر السايدبار */}
         <div className="p-4 border-b border-white/10">
           <div className="text-xs uppercase tracking-wide text-white/60">Welcome</div>
           <div className="mt-1 font-medium text-white/90 truncate">
-            {user?.email ?? "Guest"}               {/* يظهر الايميل لو موجود، لو لا يكتب Guest */}
+            {user?.email ?? "Guest"}
           </div>
         </div>
 
-        {/* قائمة الروابط */}
+        {/* روابط التنقل */}
         <nav className="p-3 space-y-1">
-          {nav.map(item => {
-            if (item.adminOnly && !isAdmin) return null;      // لو اللينك ادمن بس والمستخدم مش ادمن: مخفي
-            const active = pathname === item.href;            // هل ده هو الرابط الحالي (مفعل)؟
+          {nav.map((item) => {
+            if (item.adminOnly && !isAdmin) return null;
+            const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
@@ -87,10 +84,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 className={[
                   "block rounded-lg px-3 py-2 text-sm transition",
                   active
-                    ? "bg-cyan-400/20 border border-cyan-300/25" // لو هو الحالي لونه مختلف
-                    : "border border-transparent hover:border-white/10 hover:bg-white/5", // الافتراضي
+                    ? "bg-cyan-400/20 border border-cyan-300/25"
+                    : "border border-transparent hover:border-white/10 hover:bg-white/5",
                 ].join(" ")}
-                onClick={() => setOpen(false)}                // لما اضغط اقفل السايدبار (في الموبايل)
+                onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>
@@ -98,7 +95,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        {/* زرار الخروج (Logout) تحت السايدبار */}
+        {/* زر الخروج */}
         <div className="mt-auto absolute bottom-0 left-0 right-0 p-3 border-t border-white/10">
           <button
             onClick={onLogout}
@@ -109,9 +106,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* هنا مكان المحتوى الاساسي للتطبيق */}
+      {/* المحتوى الرئيسي */}
       <main className="md:ml-64 p-4 sm:p-6 md:p-8">{children}</main>
     </div>
   );
 }
-
