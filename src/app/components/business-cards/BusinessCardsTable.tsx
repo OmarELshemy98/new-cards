@@ -5,7 +5,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { Card } from "@/services/business-cards";
 import BusinessCardModal from "./BusinessCardModal";
 import { TABLE_COLUMNS, useBusinessCards } from "./logic";
-import s from "./BusinessCardsTable.module.css";
+import s from "@/styles/components/business-cards/BusinessCardsTable.module.css";
 
 type Props = {
   cards: Card[];

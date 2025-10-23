@@ -3,7 +3,7 @@
 import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import s from "./Login.module.css";
+import s from "@/styles/components/pages/login/Login.module.css";
 
 const pulseBoxShadow = s.glow; // just alias
 
