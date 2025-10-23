@@ -1,21 +1,50 @@
-/* 
-  الملف ده مسؤول عن تفعيل TailwindCSS وعن شوية ستايلات عامة بسيطة على مستوى التطبيق.
-*/
+/* app/globals.css */
 
-/* ✅ السطر ده لوحده بيشغّل Tailwind (عبر PostCSS config): utilities/components/... */
-@import "tailwindcss";
+/* Reset خفيف */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body, h1, h2, h3, h4, p, figure, blockquote, dl, dd { margin: 0; }
+ul[role="list"], ol[role="list"] { list-style: none; padding: 0; }
+img, picture { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; }
 
-/* نخلي ارتفاع html/body/#__next ياخدوا طول الشاشة كله */
-html, body, #__next {
-  height: 100%;
-}
-
-/* نحدد إن التطبيق يشغّل مظهر داكن افتراضيًا للمتصفح */
+/* Theme (Light) */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+
+  /* ألوان عامة لايت */
+  --bg: #f7f8fb;                 /* خلفية عامة فاتحة */
+  --panel: rgba(0, 0, 0, 0.04);   /* بطاقات خفيفة */
+  --panel-2: rgba(0, 0, 0, 0.02); /* بطاقات أخف */
+  --border: rgba(0, 0, 0, 0.12);  /* حدود خفيفة */
+  --text: #0f172a;                /* نص رئيسي غامق */
+  --text-dim: rgba(15, 23, 42, 0.8);
+  --text-dimmer: rgba(15, 23, 42, 0.6);
+
+  /* ألوان الأكشن */
+  --primary: #06b6d4;            /* cyan-500 تقريبًا */
+  --primary-soft: rgba(6,182,212,0.12);
+  --primary-border: rgba(6,182,212,0.35);
+  --primary-2: #a855f7;          /* violet/fuchsia */
+
+  /* تحذيرات */
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.10);
+  --danger-border: rgba(239, 68, 68, 0.28);
+  --danger-text: #b91c1c;
 }
 
-/* بنطبّق شوية كلاسات Tailwind على الـ body: anti-alias + خلفية داكنة + نص أبيض */
+html { background: var(--bg); }
 body {
-  @apply antialiased bg-slate-950 text-white;
+  min-height: 100%;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Utilities بسيطة عامة */
+.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 16px; }
+.hidden { display: none; }
+
+/* Focus ring */
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
