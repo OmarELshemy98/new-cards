@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/src/hooks/useAuth";
 import s from "@/styles/components/AppShell.module.css";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

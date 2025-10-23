@@ -1,11 +1,11 @@
-import React from 'react'
+// app/cards/page.tsx
+import React from "react";
+import s from "@/styles/cards/CardBox.module.css";
 
-const page = () => {
+export default function Page() {
   return (
-<div className='h-20 w-20 bg-white'>
+    <div className={s.box}>
       card
     </div>
-  )
+  );
 }
-
-export default page

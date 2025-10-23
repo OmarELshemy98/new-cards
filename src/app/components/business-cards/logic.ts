@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { Card } from "@/services/business-cards";
-import { createCard, updateCard, deleteCard } from "@/services/business-cards";
+import type { Card } from "@/src/services/business-cards";
+import { createCard, updateCard, deleteCard } from "@/src/services/business-cards";
 import { companyOptions, filterCards, toPayload } from "./helpers";
 import type { FormValues } from "./types";
 

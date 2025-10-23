@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import type { Card } from "@/services/business-cards";
+import type { Card } from "@/src/services/business-cards";
 import type { FormValues, TemplateType } from "./types";
 import s from "@/styles/components/business-cards/BusinessCardModal.module.css";
 

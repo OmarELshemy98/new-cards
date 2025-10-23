@@ -9,7 +9,7 @@
  */
 
 // بنستورد قاعدة البيانات اللي عملناها في firebaseConfig
-import { db } from "@/firebaseConfig";
+import { db } from "@/src/firebaseConfig";
 
 // بنستورد شوية دوال من فايربيز Firestore:
 // - collection: عشان نشاور على مجموعة الكروت

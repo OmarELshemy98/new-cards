@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { Card } from "@/services/business-cards";
+import type { Card } from "@/src/services/business-cards";
 import BusinessCardModal from "./BusinessCardModal";
 import { TABLE_COLUMNS, useBusinessCards } from "./logic";
 import s from "@/styles/components/business-cards/BusinessCardsTable.module.css";
