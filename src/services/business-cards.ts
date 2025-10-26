@@ -1,4 +1,4 @@
-  /**
+/**
  * 
  * ❓ ايه فكرة الملف ده ببساطة؟
  * 
@@ -8,13 +8,8 @@
  * - يعني باختصار: لو عندك مستخدم سجل دخول، وعايز تجيب كل كروته من القاعدة.. تستخدم الدالة دي، وترتاح من التفاصيل.
  */
 
-// بنستورد قاعدة البيانات اللي عملناها في firebaseConfig
 import { db } from "@/src/firebaseConfig";
 
-// بنستورد شوية دوال من فايربيز Firestore:
-// - collection: عشان نشاور على مجموعة الكروت
-// - getDocs: عشان نجيب كل المستندات (الكروت)
-// - query/where: نفلتر الكروت حسب مين صاحبها
 import { collection, getDocs, query, where, addDoc, doc, updateDoc, deleteDoc, getDoc, type UpdateData, type DocumentData } from "firebase/firestore";
 
 // بنعرف النوع / شكل الداتا بتاعة كل كارت
@@ -36,24 +31,18 @@ export type Card = {
   customerId?: string; // الشركة/العميل لاستخدامها في الفلترة
 };
 
-// اسم مجموعة الكروت في فايربيز
 const COLLECTION = "business_cards" as const;
 
 // دالة بترجع كل الكروت اللي تخص مستخدم معين (من خلال uid)
 export async function getAll(uid: string, opts?: { isAdmin?: boolean }) {
-  // لو uid مش موجود (مثلاً المستخدم مش مسجل دخول)، رجع مصفوفة فاضية
   if (!uid) return [];
 
-  // بنشاور على مجموعة الكروت
   const colRef = collection(db, COLLECTION);
 
-  // الأدمن يشوف كل الكروت، غير الأدمن يفلتر على ownerId
   const q = opts?.isAdmin ? undefined : query(colRef, where("ownerId", "==", uid));
 
-  // بننفذ الاستعلام ونستنى النتيجة
   const qs = q ? await getDocs(q) : await getDocs(colRef);
 
-  // بنرجّع مصفوفة كروت: كل واحد فيهم فيه id و باقي البيانات
   return qs.docs.map((d) => ({
     id: d.id,
     ...(d.data() as Omit<Card, "id">),
@@ -78,4 +67,13 @@ export async function updateCard(id: string, data: Partial<Omit<Card, "id" | "ow
 export async function deleteCard(id: string) {
   const ref = doc(db, COLLECTION, id);
   await deleteDoc(ref);
+}
+
+// 👇 أضف الدالة دي في آخر الملف (أو أي مكان مناسب)
+export async function getById(id: string): Promise<Card | null> {
+  if (!id) return null;
+  const ref = doc(db, COLLECTION, id);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...(snap.data() as Omit<Card, "id">) };
 }

@@ -1,6 +1,6 @@
 // app/cards/page.tsx
 import React from "react";
-import s from "@/styles/cards/CardBox.module.css";
+import s from "@/styles/components/pages/cards/CardBox.module.css";
 
 export default function Page() {
   return (

@@ -6,7 +6,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyD3bWxidID9NovC4RIQxUI4fKOqAql2K58",
   authDomain: "medyourprofiles.firebaseapp.com",
   projectId: "medyourprofiles",
-  storageBucket: "medyourprofiles.firebasestorage.app",
+  storageBucket: "medyourprofiles.appspot.com",
   messagingSenderId: "250236138150",
   appId: "1:250236138150:web:10619e4a0c0b2aeb75ba67",
   measurementId: "G-GE3RRV3WCM",
