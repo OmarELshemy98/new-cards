@@ -1,0 +1,39 @@
+/* app/cards/[id]/templates/axiom/AxiomCard.module.css */
+.root { padding: 16px; background: var(--bg); }
+.card {
+  max-width: 840px; margin: 0 auto; background: #0f172a; color: #e2e8f0;
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px;
+}
+.header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.name { font-size: 30px; font-weight: 800; letter-spacing: -0.01em; color: #f8fafc; }
+.title { margin-top: 2px; color: #94a3b8; }
+.cta {
+  padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06); color: #f8fafc; text-decoration: none; font-weight: 700;
+}
+
+.grid {
+  margin-top: 16px;
+  display: grid; gap: 12px;
+  grid-template-columns: 1fr; 
+}
+@media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+
+.tile {
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 12px;
+  background: rgba(255,255,255,0.04);
+}
+.label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+.value { margin-top: 4px; overflow-wrap: anywhere; }
+
+.about { margin-top: 18px; }
+.about h2 { font-size: 18px; font-weight: 800; color: #f8fafc; margin-bottom: 6px; }
+.about p { line-height: 1.6; color: #e2e8f0; }
+
+.socials { margin-top: 18px; }
+.socials h2 { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: #f8fafc; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06); color: #f8fafc; text-decoration: none; font-weight: 600;
+}
