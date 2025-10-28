@@ -69,11 +69,10 @@ export async function deleteCard(id: string) {
   await deleteDoc(ref);
 }
 
-// 👇 أضف الدالة دي في آخر الملف (أو أي مكان مناسب)
+// استخراج كارت بواسطة المعرف
 export async function getById(id: string): Promise<Card | null> {
-  if (!id) return null;
-  const ref = doc(db, COLLECTION, id);
+  const ref = doc(db, "business_cards", id);
   const snap = await getDoc(ref);
   if (!snap.exists()) return null;
-  return { id: snap.id, ...(snap.data() as Omit<Card, "id">) };
+  return { id: snap.id, ...(snap.data() as Omit<Card, "id">) } as Card;
 }
