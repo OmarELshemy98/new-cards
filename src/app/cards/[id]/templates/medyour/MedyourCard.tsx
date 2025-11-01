@@ -81,7 +81,7 @@ function TwitterXSocialItem() {
   );
 }
 
-export default function MedyourCard({ card, socials: _socials, ensureHttp }: BrandTemplateProps) {
+export default function MedyourCard({ card, ensureHttp }: BrandTemplateProps) {
   const [overlayHidden, setOverlayHidden] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setOverlayHidden(true), 2000);
@@ -115,13 +115,6 @@ export default function MedyourCard({ card, socials: _socials, ensureHttp }: Bra
       src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
       color: "#1e40af",
     },
-    // The "X" card will be handled specially below
-    // {
-    //   label: "X",
-    //   href: "https://x.com/medyouregypt",
-    //   src: "/medyour-cards/image/x-logo.svg",
-    //   color: "#111827",
-    // },
   ];
 
   const websiteHref = ensureHttp(card.website || "https://www.medyour.com");
@@ -149,6 +142,41 @@ export default function MedyourCard({ card, socials: _socials, ensureHttp }: Bra
     document.body.appendChild(a);
     a.click();
     a.remove();
+  }
+
+  // ✅ يظهر الزر دايمًا. لو vcfUrl موجود هننزّل الملف الجاهز.
+  // لو مش موجود، نولّد vCard ديناميكيًا وننزّله، مع الحفاظ على نفس الستايل.
+  function onAddContactClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (vcfUrl) return; // عندي ملف جاهز، خليه يكمل الـ download الافتراضي
+    e.preventDefault();
+
+    const vcard =
+      [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        `N:${name}`,
+        `FN:${name}`,
+        `ORG:${company}`,
+        title ? `TITLE:${title}` : "",
+        phone1 ? `TEL;TYPE=work,voice:${phone1}` : "",
+        phone2 ? `TEL;TYPE=work,voice:${phone2}` : "",
+        email ? `EMAIL;TYPE=internet:${email}` : "",
+        websiteHref ? `URL:${websiteHref}` : "",
+        "END:VCARD",
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+    const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const filenameSafe = (name || "contact").replace(/\s+/g, "_");
+    a.href = url;
+    a.download = `${filenameSafe}.vcf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   return (
@@ -227,11 +255,11 @@ export default function MedyourCard({ card, socials: _socials, ensureHttp }: Bra
           <section className={s.socialSection}>
             <h3 className={s.followTitle}>Follow Us</h3>
             <div className={s.socialGrid}>
-              {/* Render all socials except X/Twitter */}
               {orderedSocials.map((soc) => (
                 <a key={soc.label} className={s.socialItem} href={soc.href} target="_blank" rel="noreferrer">
                   <div className={s.socialLeft}>
-                    <Image src={soc.src} alt={soc.label} width={48} height={48} className={s.socialIcon} />
+                    {/* استخدمت <img> هنا علشان تفضل الأيقونات بنفس الشكل 1:1 */}
+                    <Image src={soc.src} alt={soc.label} className={s.socialIcon} width={24} height={24} />
                     <span className={s.socialName} style={{ color: soc.color }}>
                       {soc.label}
                     </span>
@@ -248,7 +276,6 @@ export default function MedyourCard({ card, socials: _socials, ensureHttp }: Bra
                   </svg>
                 </a>
               ))}
-              {/* Special X (Twitter) social card */}
               <TwitterXSocialItem />
             </div>
           </section>
@@ -271,17 +298,22 @@ export default function MedyourCard({ card, socials: _socials, ensureHttp }: Bra
         </div>
       </main>
 
-      {/* Floating Add-to-Contact */}
-      {vcfUrl && (
-        <div className={s.fab}>
-          <a className={s.fabBtn} href={vcfUrl} download>
-            <span className={s.fabText}>Add to Contact</span>
-            <span className={s.fabCircle}>
-              <PlusGlyph />
-            </span>
-          </a>
-        </div>
-      )}
+      {/* ✅ Floating Add-to-Contact — يظهر دايمًا وبنفس الستايل */}
+      <div className={s.fab}>
+        <a
+          className={s.fabBtn}
+          href={vcfUrl ?? "#"}
+          download={vcfUrl ? "" : undefined}
+          onClick={onAddContactClick}
+          aria-label="Add to Contact"
+          title="Add to Contact"
+        >
+          <span className={s.fabText}>Add to Contact</span>
+          <span className={s.fabCircle}>
+            <PlusGlyph />
+          </span>
+        </a>
+      </div>
     </div>
   );
 }
