@@ -1,5 +1,5 @@
 // app/components/business-cards/helpers.ts
-import type { Card } from "@/services/business-cards";
+import type { Card } from "@/src/services/business-cards";
 import type { FormValues } from "./types";
 
 /** تحويل قيم الفورم لبايلود Firestore */
