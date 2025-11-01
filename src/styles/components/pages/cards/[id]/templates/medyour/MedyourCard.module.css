@@ -20,7 +20,7 @@
   margin-right: auto;          /* mx-auto */
   margin-bottom: 56px;         /* space for overlapping avatar */
   border-radius: 0.75rem;      /* rounded-xl */
-  overflow: hidden;
+  /* overflow: hidden; */
   display: flex;
 }
 @media (min-width: 640px) {     /* sm */
