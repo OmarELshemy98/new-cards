@@ -98,7 +98,7 @@ export default function LoginPage() {
                 <input type="checkbox" className={s.checkbox} defaultChecked />
                 <span>Remember me</span>
               </label>
-              <button type="button" onClick={() => alert("Need real password reset? I can wire it up for you.")} style={{ color: "#a5f3fc", textDecoration: "underline" }}>
+              <button type="button" onClick={() => alert("Need real password reset? I can wire it up for you.")} style={{ color: "#0e738f", textDecoration: "underline" }}>
                 Forgot password?
               </button>
             </div>

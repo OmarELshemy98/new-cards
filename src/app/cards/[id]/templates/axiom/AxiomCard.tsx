@@ -314,15 +314,15 @@ END:VCARD`;
             </section>
           )}
 
-          {websiteHref && websiteText && (
-            <section className={s.websiteCard}>
-              <a className={s.websiteLink} href={websiteHref} target="_blank" rel="noreferrer">
-                {websiteText}
-              </a>
-              <span className={s.websiteSub}>Description</span>
-              <p className={s.websiteDesc}>{description}</p>
-            </section>
-          )}
+          
+          <section className={s.websiteCard}>
+          <a className={s.websiteLink} href={websiteHref} target="_blank" rel="noreferrer">
+            {websiteText}
+          </a>
+          <span className={s.websiteSub}>Description</span>
+          <p className={s.websiteDesc}>{description}</p>
+        </section>
+         
 
           <div className={s.qrWrap}>
             <button type="button" className={s.qrBtn} onClick={onDownloadQR}>
