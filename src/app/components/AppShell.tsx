@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/src/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import s from "@/styles/components/AppShell.module.css";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  // اقفل المينيو تلقائيًا عند أي تنقل
   useEffect(() => { setOpen(false); }, [pathname]);
 
   const nav = [
@@ -34,7 +33,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         Menu
       </button>
 
-      {/* خليك حريص: لازم s.open يكون مُعرّف في CSS Module */}
       <aside id="sidebar" className={`${s.sidebar} ${open ? s.open : ""}`}>
         <div className={s.header}>
           <div className={s.welcome}>Welcome</div>
@@ -46,11 +44,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             if (item.adminOnly && !isAdmin) return null;
             const active = pathname === item.href;
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${s.link} ${active ? s.active : ""}`}
-              >
+              <Link key={item.href} href={item.href} className={`${s.link} ${active ? s.active : ""}`}>
                 {item.label}
               </Link>
             );

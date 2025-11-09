@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { toDataURL } from "qrcode";
 import type { BrandTemplateProps } from "../index";
 import s from "@/styles/components/pages/cards/[id]/templates/axiom/AxiomCard.module.css";
 
@@ -43,7 +44,6 @@ function PlusGlyph() {
   );
 }
 
-// Extra fields that may exist in Firestore card document
 type ExtraFields = {
   company?: string;
   address?: string;
@@ -103,30 +103,33 @@ export default function AxiomCard({ card, socials: _socials, ensureHttp }: Brand
       src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
       color: "#1e40af",
     },
-  ]
-    .filter(Boolean)
-    .map((s) => s as { label: string; href: string; src: string; color: string });
+  ].filter(Boolean) as { label: string; href: string; src: string; color: string }[];
 
   const hasX = Boolean(c.twitter);
 
-  const qrPng = useMemo(() => {
-    return c.qrFilename ? `/axiom-cards/image/qr-codes/${c.qrFilename}` : undefined;
-  }, [c.qrFilename]);
-
-  function onDownloadQR() {
-    if (!qrPng) {
-      alert("QR code not available for this profile.");
-      return;
+  // ✅ توليد وتحميل QR كـ PNG
+  async function onDownloadQR() {
+    try {
+      const profileUrl = `${window.location.origin}/cards/${c.id}`;
+      const dataUrl = await toDataURL(profileUrl, {
+        errorCorrectionLevel: "H",
+        width: 512,
+        margin: 2,
+        color: { dark: "#000000", light: "#ffffff" },
+      });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      const filenameSafe = (name || "qr").replace(/\s+/g, "_");
+      a.download = `${filenameSafe}_QR.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate QR code. Please try again.");
     }
-    const a = document.createElement("a");
-    a.href = qrPng;
-    a.download = qrPng.split("/").pop() || "qr.png";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
   }
 
-  /** Create and download vCard dynamically */
   function onDownloadVcf() {
     const vCard = `BEGIN:VCARD
 VERSION:3.0
@@ -314,15 +317,13 @@ END:VCARD`;
             </section>
           )}
 
-          {websiteHref && websiteText && (
-            <section className={s.websiteCard}>
-              <a className={s.websiteLink} href={websiteHref} target="_blank" rel="noreferrer">
-                {websiteText}
-              </a>
-              <span className={s.websiteSub}>Description</span>
-              <p className={s.websiteDesc}>{description}</p>
-            </section>
-          )}
+          <section className={s.websiteCard}>
+            <a className={s.websiteLink} href={websiteHref} target="_blank" rel="noreferrer">
+              {websiteText}
+            </a>
+            <span className={s.websiteSub}>Description</span>
+            <p className={s.websiteDesc}>{description}</p>
+          </section>
 
           <div className={s.qrWrap}>
             <button type="button" className={s.qrBtn} onClick={onDownloadQR}>

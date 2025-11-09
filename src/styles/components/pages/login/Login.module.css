@@ -1,75 +1,200 @@
+/* --- Tabs محسّنة --- */
+
 .root {
-    min-height: 100dvh; display: flex; align-items: center; justify-content: center;
-    background:
-      radial-gradient(900px 480px at 10% 0%, rgba(6,182,212,0.12), transparent 60%),
-      radial-gradient(800px 520px at 100% 100%, rgba(168,85,247,0.10), transparent 60%),
-      var(--bg);
-    position: relative; overflow: hidden; padding: 16px;
-  }
-  
-  .cardWrap { position: relative; width: 100%; max-width: 420px; transition: transform .7s ease, opacity .7s ease; }
-  
-  .glow {
-    position: absolute; inset: 0; border-radius: 24px; filter: blur(18px); opacity: .25; pointer-events: none;
-    background: linear-gradient(135deg, rgba(6,182,212,0.6), rgba(168,85,247,0.65), rgba(14,165,233,0.5));
-    animation: shadowPulse 2.8s ease-in-out infinite;
-  }
-  
-  .card {
-    position: relative; border-radius: 24px; background: #fff;
-    border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-    padding: 24px; display: grid; gap: 16px; color: var(--text);
-  }
-  
-  .header { display: flex; gap: 12px; align-items: center; }
-  .h1 { font-size: 22px; font-weight: 700; color: #0e7490; /* teal-ish */ }
-  .h1sub { font-size: 12px; margin-top: 2px; color: var(--text-dimmer); }
-  
-  .alert {
-    display: flex; align-items: center; gap: 8px;
-    border-radius: 8px; border: 1px solid var(--danger-border);
-    background: var(--danger-bg); color: var(--danger-text); padding: 8px 12px; font-size: 14px;
-  }
-  
-  .form { display: grid; gap: 14px; }
-  .label { font-size: 13px; color: var(--text-dimmer); display: block; margin-bottom: 4px; }
-  .input {
-    width: 100%; padding: 10px 12px; border-radius: 10px;
-    border: 1px solid var(--border); background: #fff;
-    color: var(--text);
-  }
-  .passWrap { position: relative; }
-  .eye {
-    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    padding: 4px 6px; border-radius: 8px; background: var(--panel);
-    color: var(--text-dim);
-  }
-  
-  .row {
-    display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-top: 4px;
-    color: var(--text-dimmer);
-  }
-  .checkbox { width: 16px; height: 16px; accent-color: var(--primary); }
-  
-  .btnPrimary, .btnSecondary {
-    width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 16px;
-    transition: transform .15s ease;
-  }
-  .btnPrimary {
-    background: linear-gradient(90deg, var(--primary), var(--primary-2));
-    color: white; border: none;
-  }
-  .btnSecondary {
-    margin-top: 8px;
-    background: var(--primary-soft); color: var(--text); border: 1px solid var(--primary-border);
-  }
-  
-  .footer { padding-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: var(--text-dim); }
-  
-  @keyframes shadowPulse {
-    0%,100% { box-shadow: 0 0 24px 6px rgba(6,182,212,0.35), 0 0 3px 0 rgba(168,85,247,0.35);}
-    25% { box-shadow: 0 0 28px 8px rgba(168,85,247,0.35), 0 0 6px 1px rgba(6,182,212,0.35);}
-    60% { box-shadow: 0 0 22px 5px rgba(6,182,212,0.28), 0 0 4px 0 rgba(168,85,247,0.3);}
-  }
-  
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(900px 480px at 10% 0%, rgba(6,182,212,0.12), transparent 60%),
+    radial-gradient(800px 520px at 100% 100%, rgba(168,85,247,0.10), transparent 60%),
+    var(--bg);
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.cardWrap {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  transition: transform .7s ease, opacity .7s ease;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  filter: blur(18px);
+  opacity: .25;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(6,182,212,0.6), rgba(168,85,247,0.65), rgba(14,165,233,0.5));
+  animation: shadowPulse 2.8s ease-in-out infinite;
+}
+
+.card {
+  position: relative;
+  border-radius: 24px;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+  color: var(--text);
+}
+
+.header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.h1 { font-size: 22px; font-weight: 700; color: #0e7490; /* teal-ish */ }
+.h1sub { font-size: 12px; margin-top: 2px; color: var(--text-dimmer); }
+
+/* --- Tabs محسّنة --- */
+.tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 6px 0 2px;
+}
+.tab {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+}
+.tabActive {
+  border-color: var(--primary-border);
+  background: var(--primary-soft);
+}
+.tabUnderline {
+  position: absolute;
+  bottom: -6px;
+  width: calc(50% - 4px);
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  transition: transform .25s ease;
+}
+.tabUnderline.left { transform: translateX(0); left: 2px; }
+.tabUnderline.right { transform: translateX(100%); left: 2px; }
+
+/* Link-like button */
+.linkButton {
+  color: #a5f3fc;
+  text-decoration: underline;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Password meter */
+.meterWrap { margin-top: 6px; height: 6px; background: rgba(0,0,0,.06); border-radius: 8px; }
+.meter { height: 100%; width: 20%; border-radius: 8px; background: transparent; transition: all .25s ease; }
+.m1 .meter { background: #fca5a5; width: 20%; }
+.m2 .meter { background: #fdba74; width: 40%; }
+.m3 .meter { background: #fcd34d; width: 60%; }
+.m4 .meter { background: #86efac; width: 80%; }
+.m5 .meter { background: #34d399; width: 100%; }
+
+/* بدل ما نغيّر DOM، هنضيف كلاس على نفس العنصر */
+.meter.m1 { background: #fca5a5; width: 20%; }
+.meter.m2 { background: #fdba74; width: 40%; }
+.meter.m3 { background: #fcd34d; width: 60%; }
+.meter.m4 { background: #86efac; width: 80%; }
+.meter.m5 { background: #34d399; width: 100%; }
+
+/* Hint */
+.hint { display:block; margin-top:6px; color: var(--text-dimmer); }
+
+/* Validity edge for confirm password */
+.valid { border-color: #86efac; box-shadow: 0 0 0 1px #bbf7d0 inset; }
+.invalid { border-color: #fda4af; box-shadow: 0 0 0 1px #fecdd3 inset; }
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.form { display: grid; gap: 14px; }
+.label { font-size: 13px; color: var(--text-dimmer); display: block; margin-bottom: 4px; }
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+}
+.passWrap { position: relative; }
+.eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text-dim);
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 4px;
+  color: var(--text-dimmer);
+}
+.checkbox { width: 16px; height: 16px; accent-color: var(--primary); }
+
+.btnPrimary, .btnSecondary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: transform .15s ease;
+}
+.btnPrimary {
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  color: white;
+  border: none;
+}
+.btnSecondary {
+  margin-top: 8px;
+  background: var(--primary-soft);
+  color: var(--text);
+  border: 1px solid var(--primary-border);
+}
+
+.footer {
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+@keyframes shadowPulse {
+  0%,100% { box-shadow: 0 0 24px 6px rgba(6,182,212,0.35), 0 0 3px 0 rgba(168,85,247,0.35);}
+  25% { box-shadow: 0 0 28px 8px rgba(168,85,247,0.35), 0 0 6px 1px rgba(6,182,212,0.35);}
+  60% { box-shadow: 0 0 22px 5px rgba(6,182,212,0.28), 0 0 4px 0 rgba(168,85,247,0.3);}
+}

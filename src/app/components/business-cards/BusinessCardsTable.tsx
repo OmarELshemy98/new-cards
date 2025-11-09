@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { Card } from "@/src/services/business-cards";
+import type { Card } from "@/services/business-cards";
 import BusinessCardModal from "./BusinessCardModal";
 import { TABLE_COLUMNS, useBusinessCards } from "./logic";
 import s from "@/styles/components/business-cards/BusinessCardsTable.module.css";
@@ -72,7 +72,7 @@ export default function BusinessCardsTable({ cards, setCards, userId }: Props) {
                   <td className={s.td}><div>{c.title || "—"}</div></td>
                   <td className={s.td}><div style={{wordBreak: "break-all"}}>{c.email || "—"}</div></td>
                   <td className={s.td}><div>{c.customerId || "—"}</div></td>
-                  <td className={s.td}><div>{c.template || "—"}</div></td>
+                  <td className={s.td}><div style={{wordBreak:"break-all"}}>{c.id}</div></td>
                   <td className={s.td}>
                     <div className={s.actions}>
                       <button

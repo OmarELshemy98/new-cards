@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { toDataURL } from "qrcode"; // ⬅️ استيراد ثابت
 import type { BrandTemplateProps } from "../index";
 import s from "@/styles/components/pages/cards/[id]/templates/medyour/MedyourCard.module.css";
 
@@ -51,7 +52,17 @@ function TwitterXSocialItem() {
       target="_blank"
       rel="noreferrer"
       className={s.socialItem}
-      style={{ background: "#fff", borderRadius: "0.75rem", boxShadow: "0 1px 6px #0001", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", cursor: "pointer", transition: "all 0.2s" }}
+      style={{
+        background: "#fff",
+        borderRadius: "0.75rem",
+        boxShadow: "0 1px 6px #0001",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0.75rem 1rem",
+        cursor: "pointer",
+        transition: "all 0.2s"
+      }}
     >
       <div className={s.socialLeft} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
         <span style={{ width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -82,7 +93,9 @@ function TwitterXSocialItem() {
 }
 
 export default function MedyourCard({ card, ensureHttp }: BrandTemplateProps) {
+
   const [overlayHidden, setOverlayHidden] = useState(false);
+
   useEffect(() => {
     const t = setTimeout(() => setOverlayHidden(true), 2000);
     return () => clearTimeout(t);
@@ -123,49 +136,48 @@ export default function MedyourCard({ card, ensureHttp }: BrandTemplateProps) {
     card.shortDescription ||
     "Medyour is a comprehensive digital platform offering easy and fast access to reliable, high-quality healthcare. We provide smart tools and user-friendly apps for individuals and families, along with dedicated solutions for corporates to efficiently manage employee healthcare, removing traditional healthcare barriers.";
 
-  const vcfUrl = useMemo(() => {
-    return card.vcfFilename ? `/medyour-cards/image/vcards/${card.vcfFilename}` : undefined;
-  }, [card.vcfFilename]);
+  const vcfUrl = useMemo(
+    () => (card.vcfFilename ? `/medyour-cards/image/vcards/${card.vcfFilename}` : undefined),
+    [card.vcfFilename]
+  );
 
-  const qrPng = useMemo(() => {
-    return card.qrFilename ? `/medyour-cards/image/qr-codes/${card.qrFilename}` : undefined;
-  }, [card.qrFilename]);
-
-  function onDownloadQR() {
-    if (!qrPng) {
-      alert("QR code not available for this profile.");
-      return;
+  // ✅ توليد وتحميل QR
+  async function onDownloadQR() {
+    try {
+      const profileUrl = `${window.location.origin}/cards/${card.id}`;
+      const dataUrl = await toDataURL(profileUrl, {
+        errorCorrectionLevel: "H",
+        width: 512,
+        margin: 2,
+        color: { dark: "#000000", light: "#ffffff" },
+      });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      const filenameSafe = (name || "qr").replace(/\s+/g, "_");
+      a.download = `${filenameSafe}_QR.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate QR code. Please try again.");
     }
-    const a = document.createElement("a");
-    a.href = qrPng;
-    a.download = qrPng.split("/").pop() || "qr.png";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
   }
 
-  // ✅ يظهر الزر دايمًا. لو vcfUrl موجود هننزّل الملف الجاهز.
-  // لو مش موجود، نولّد vCard ديناميكيًا وننزّله، مع الحفاظ على نفس الستايل.
   function onAddContactClick(e: React.MouseEvent<HTMLAnchorElement>) {
-    if (vcfUrl) return; // عندي ملف جاهز، خليه يكمل الـ download الافتراضي
+    if (vcfUrl) return;
     e.preventDefault();
 
-    const vcard =
-      [
-        "BEGIN:VCARD",
-        "VERSION:3.0",
-        `N:${name}`,
-        `FN:${name}`,
-        `ORG:${company}`,
-        title ? `TITLE:${title}` : "",
-        phone1 ? `TEL;TYPE=work,voice:${phone1}` : "",
-        phone2 ? `TEL;TYPE=work,voice:${phone2}` : "",
-        email ? `EMAIL;TYPE=internet:${email}` : "",
-        websiteHref ? `URL:${websiteHref}` : "",
-        "END:VCARD",
-      ]
-        .filter(Boolean)
-        .join("\n");
+    const vcard = [
+      "BEGIN:VCARD", "VERSION:3.0",
+      `N:${name}`, `FN:${name}`, `ORG:${company}`,
+      title ? `TITLE:${title}` : "",
+      phone1 ? `TEL;TYPE=work,voice:${phone1}` : "",
+      phone2 ? `TEL;TYPE=work,voice:${phone2}` : "",
+      email ? `EMAIL;TYPE=internet:${email}` : "",
+      websiteHref ? `URL:${websiteHref}` : "",
+      "END:VCARD",
+    ].filter(Boolean).join("\n");
 
     const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -258,7 +270,6 @@ export default function MedyourCard({ card, ensureHttp }: BrandTemplateProps) {
               {orderedSocials.map((soc) => (
                 <a key={soc.label} className={s.socialItem} href={soc.href} target="_blank" rel="noreferrer">
                   <div className={s.socialLeft}>
-                    {/* استخدمت <img> هنا علشان تفضل الأيقونات بنفس الشكل 1:1 */}
                     <Image src={soc.src} alt={soc.label} className={s.socialIcon} width={24} height={24} />
                     <span className={s.socialName} style={{ color: soc.color }}>
                       {soc.label}
