@@ -6,7 +6,7 @@
  * - sanitize: تمنع undefined وتعمل trim للـ strings قبل الكتابة على Firestore.
  */
 
-import { db } from "@/src/firebaseConfig";
+import { db } from "@/firebaseConfig";
 import {
   collection,
   getDocs,

@@ -1,19 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/src/hooks/useAuth"; // ← NEW
-import type { AppUser } from "@/src/services/users";
-import { deleteUser } from "@/src/services/users";
+import { useAuth } from "@/hooks/useAuth";
+import type { AppUser } from "@/services/users";
+import { deleteUser } from "@/services/users";
 import s from "@/styles/components/users/UsersTable.module.css";
 
 type Props = { users: AppUser[]; setUsers: React.Dispatch<React.SetStateAction<AppUser[]>> };
 
 export default function UsersTable({ users, setUsers }: Props) {
-  const { user: me } = useAuth(); // ← NEW (المستخدم الحالي)
+  const { user: me } = useAuth();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function onDelete(u: AppUser) {
-    // منع حذف النفس
     if (me?.uid === u.id) {
       alert("You can't delete your own account.");
       return;
@@ -48,7 +47,7 @@ export default function UsersTable({ users, setUsers }: Props) {
         </thead>
         <tbody>
           {users.map(u => {
-            const isSelf = me?.uid === u.id; // ← NEW
+            const isSelf = me?.uid === u.id;
             const disabled = deletingId === u.id || isSelf;
 
             return (

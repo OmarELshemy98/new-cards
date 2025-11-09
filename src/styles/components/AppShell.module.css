@@ -15,6 +15,7 @@
 }
 
 /* needed so CSS Modules exports `s.open` */
+.open {}
 
 .sidebar {
   position: fixed;

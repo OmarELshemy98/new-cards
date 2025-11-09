@@ -2,17 +2,20 @@
 
 import { useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { Card } from "@/src/services/business-cards";
-import { createCard, updateCard, deleteCard } from "@/src/services/business-cards";
+import type { Card } from "@/services/business-cards";
+import { createCard, updateCard, deleteCard } from "@/services/business-cards";
 import { companyOptions, filterCards, toPayload } from "./helpers";
 import type { FormValues } from "./types";
+
+/* ... باقي الملف كما هو ... */
+
 
 export const TABLE_COLUMNS = [
   { key: "name",     label: "Name",     widthClass: "w-[22%]" },
   { key: "title",    label: "Title",    widthClass: "w-[18%]" },
   { key: "email",    label: "Email",    widthClass: "w-[18%]" },
   { key: "company",  label: "Company",  widthClass: "w-[18%]" },
-  { key: "template", label: "Template", widthClass: "w-[12%]" },
+  { key: "customerId", label: "customerId", widthClass: "w-[12%]" },
   { key: "actions",  label: "Actions",  widthClass: "w-[12%]" },
 ] as const;
 

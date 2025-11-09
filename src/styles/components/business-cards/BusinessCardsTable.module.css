@@ -1,3 +1,4 @@
+/* ... الموجود كما هو ... */
 .header { margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
 .title { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
 
@@ -19,20 +20,70 @@
   margin-top: 16px; border: 1px solid var(--border);
   border-radius: 12px; background: #fff; overflow: auto;
 }
-.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  table-layout: auto;
+}
 .thead { background: rgba(0,0,0,0.035); }
-.th, .td { padding: 12px 16px; text-align: left; vertical-align: top; color: var(--text); }
+
+.th, .td {
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: top;
+  color: var(--text);
+}
+
+/* رأس عمود Actions يمين وبعرض ثابت */
+.thActions {
+  text-align: right;
+  width: 140px;              /* تقدر تزودها لـ 160px حسب احتياجك */
+  white-space: nowrap;
+}
+
+/* خلية Actions يمين */
+.tdActions {
+  text-align: right;
+}
+
+/* حاوية الأزرار inline-flex بدل flex-end جوه خلية يمين */
+.actions {
+  display: inline-flex;
+  gap: 8px;
+  vertical-align: middle;
+}
+
+/* اتساق شكل الأزرار وتلوينها */
+.btn, .btnDanger {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  background: #3b82f6;         /* أزرق للزر العادي */
+  color: #fff;
+  border: none;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #2563eb;         /* أزرق غامق عند المرور عليه */
+}
+
+.btnDanger {
+  background: #f87171;         /* أحمر للزر الخطر */
+  color: #fff;
+}
+
+.btnDanger:hover {
+  background: #dc2626;         /* أحمر غامق عند المرور عليه */
+}
+
 .row { cursor: pointer; }
 .row:hover { background: rgba(0,0,0,0.03); }
 
-.actions { display: flex; gap: 8px; justify-content: flex-end; }
-.btn {
-  padding: 6px 8px; border-radius: 8px; font-size: 12px;
-  border: 1px solid var(--border); background: #fff; color: var(--text);
-}
-.btnDanger {
-  padding: 6px 8px; border-radius: 8px; font-size: 12px;
-  border: 1px solid var(--danger-border); background: var(--danger-bg); color: var(--danger-text);
-}
-
 .empty { margin-top: 16px; color: var(--text-dimmer); }
+/* ... باقي الملف كما هو ... */
