@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -45,11 +44,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             if (item.adminOnly && !isAdmin) return null;
             const active = pathname === item.href;
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${s.link} ${active ? s.active : ""}`}
-              >
+              <Link key={item.href} href={item.href} className={`${s.link} ${active ? s.active : ""}`}>
                 {item.label}
               </Link>
             );

@@ -17,7 +17,6 @@ export default function UsersTable({ users, setUsers }: Props) {
       alert("You can't delete your own account.");
       return;
     }
-
     if (!confirm(`Are you sure you want to delete user: ${u.email || u.id}?`)) return;
     try {
       setDeletingId(u.id);

@@ -14,6 +14,9 @@ type Props = {
   onSave: (values: FormValues) => Promise<void> | void;
 };
 
+// ✅ نعرّف الريجيكس خارج الكومبوننت علشان يبقى ثابت وما يطلعش تحذير dependencies
+const urlRegex = /^(https?:\/\/)?([^\s.]+\.[^\s]{2,})(\/\S*)?$/i;
+
 function ensureUrl(v: string) {
   const url = v.trim();
   if (!url) return "";
@@ -23,7 +26,7 @@ function ensureUrl(v: string) {
 
 export default function BusinessCardModal({ open, mode, card, onClose, onSave }: Props) {
   const [formError, setFormError] = useState<string | null>(null);
-  const closingAllowed = mode === "view"; // ما نقفلش وقت الحفظ
+  const closingAllowed = mode === "view";
   const isView = mode === "view";
 
   const {
@@ -53,8 +56,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
     mode: "onBlur",
   });
 
-  // URL اختياري (لو اتكتب لازم يكون صالح)
-  const urlRegex = /^(https?:\/\/)?([^\s.]+\.[^\s]{2,})(\/\S*)?$/i;
   const optionalUrlRule = useMemo(
     () => ({ validate: (v: string) => !v || urlRegex.test(v) || "Invalid URL" }),
     []
@@ -67,10 +68,8 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
     []
   );
 
-  // راقب template لإظهار/إخفاء Company
   const templateValue = watch("template");
 
-  // حمّل بيانات الكارت في الفورم
   useEffect(() => {
     if (!open) return;
     setFormError(null);
@@ -95,7 +94,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
     }
   }, [open, card, reset]);
 
-  // Esc للإغلاق السريع
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -105,7 +103,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose, isSubmitting, closingAllowed]);
 
-  // فوكس على أول حقل فيه خطأ
   const formRef = useRef<HTMLFormElement | null>(null);
   useEffect(() => {
     if (!open) return;
@@ -121,7 +118,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
     clearErrors();
     setFormError(null);
 
-    // Trim الكل + Normalize للروابط
     const clean: FormValues = {
       ...values,
       name: values.name.trim(),
@@ -143,7 +139,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
       onClose();
     } catch (e) {
       const msg = (e as Error)?.message || "Failed to save. Please try again.";
-      // تصنيف بسيط للرسائل
       const pretty =
         /permission|denied/i.test(msg)
           ? "You do not have permission to perform this action."
@@ -152,22 +147,13 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
           : msg;
 
       setFormError(pretty);
-
-      // لو فيه إيميل غلط (من السيرفر)، علم على الحقل
-      if (/email/i.test(msg)) {
-        setError("email", { type: "server", message: pretty });
-      }
+      if (/email/i.test(msg)) setError("email", { type: "server", message: pretty });
     }
   });
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="bc-modal-title" className={s.overlay}>
-      <div
-        className={s.backdrop}
-        onClick={() => {
-          if (closingAllowed || !isSubmitting) onClose();
-        }}
-      />
+      <div className={s.backdrop} onClick={() => { if (closingAllowed || !isSubmitting) onClose(); }} />
       <div className={s.modal} aria-busy={isSubmitting}>
         <div className={s.header}>
           <h2 id="bc-modal-title" className={s.title}>
@@ -184,7 +170,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
           </button>
         </div>
 
-        {/* Banner خطأ عام */}
         {formError && (
           <div
             role="alert"
@@ -203,8 +188,7 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
         )}
 
         <form ref={formRef} onSubmit={onSubmit} className={s.form} autoComplete="off" noValidate>
-          {/* Required: Name */}
-          <Field label="Name" required readOnly={isView} error={errors.name?.message}>
+          <Field label="Name" required error={errors.name?.message}>
             <input
               className={s.input}
               readOnly={isView}
@@ -214,8 +198,7 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
             />
           </Field>
 
-          {/* Required: Job title */}
-          <Field label="Job title" required readOnly={isView} error={errors.title?.message}>
+          <Field label="Job title" required error={errors.title?.message}>
             <input
               className={s.input}
               readOnly={isView}
@@ -225,8 +208,7 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
             />
           </Field>
 
-          {/* Required: Email */}
-          <Field label="Email" required readOnly={isView} error={errors.email?.message}>
+          <Field label="Email" required error={errors.email?.message}>
             <input
               type="email"
               className={s.input}
@@ -240,8 +222,7 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
             />
           </Field>
 
-          {/* Required: Website */}
-          <Field label="Website" required readOnly={isView} error={errors.website?.message}>
+          <Field label="Website" required error={errors.website?.message}>
             <input
               className={s.input}
               readOnly={isView}
@@ -251,7 +232,6 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
             />
           </Field>
 
-          {/* Required: Template */}
           <div>
             <label className={s.label} htmlFor="template">
               Template<span aria-hidden style={{ color: "#fda4af" }}> *</span>
@@ -273,81 +253,38 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
             {errors.template?.message && <div className={s.error}>{errors.template.message}</div>}
           </div>
 
-          {/* Company يظهر فقط مع custom template (اختياري) */}
           {templateValue === "custom template" && (
-            <Field label="Company (customerId)" readOnly={isView}>
+            <Field label="Company (customerId)">
               <input className={s.input} readOnly={isView} {...register("customerId")} />
             </Field>
           )}
 
-          {/* Socials — اختيارية مع URL-valid لو اتكتبت */}
-          <Field label="LinkedIn" readOnly={isView} error={errors.linkedin?.message}>
-            <input
-              className={s.input}
-              readOnly={isView}
-              aria-invalid={!!errors.linkedin || undefined}
-              {...register("linkedin", optionalUrlRule)}
-            />
+          <Field label="LinkedIn" error={errors.linkedin?.message}>
+            <input className={s.input} readOnly={isView} aria-invalid={!!errors.linkedin || undefined} {...register("linkedin", optionalUrlRule)} />
           </Field>
-          <Field label="Twitter" readOnly={isView} error={errors.twitter?.message}>
-            <input
-              className={s.input}
-              readOnly={isView}
-              aria-invalid={!!errors.twitter || undefined}
-              {...register("twitter", optionalUrlRule)}
-            />
+          <Field label="Twitter" error={errors.twitter?.message}>
+            <input className={s.input} readOnly={isView} aria-invalid={!!errors.twitter || undefined} {...register("twitter", optionalUrlRule)} />
           </Field>
-          <Field label="Facebook" readOnly={isView} error={errors.facebook?.message}>
-            <input
-              className={s.input}
-              readOnly={isView}
-              aria-invalid={!!errors.facebook || undefined}
-              {...register("facebook", optionalUrlRule)}
-            />
+          <Field label="Facebook" error={errors.facebook?.message}>
+            <input className={s.input} readOnly={isView} aria-invalid={!!errors.facebook || undefined} {...register("facebook", optionalUrlRule)} />
           </Field>
-          <Field label="Instagram" readOnly={isView} error={errors.instagram?.message}>
-            <input
-              className={s.input}
-              readOnly={isView}
-              aria-invalid={!!errors.instagram || undefined}
-              {...register("instagram", optionalUrlRule)}
-            />
+          <Field label="Instagram" error={errors.instagram?.message}>
+            <input className={s.input} readOnly={isView} aria-invalid={!!errors.instagram || undefined} {...register("instagram", optionalUrlRule)} />
           </Field>
-          <Field label="YouTube" readOnly={isView} error={errors.youtube?.message}>
-            <input
-              className={s.input}
-              readOnly={isView}
-              aria-invalid={!!errors.youtube || undefined}
-              {...register("youtube", optionalUrlRule)}
-            />
+          <Field label="YouTube" error={errors.youtube?.message}>
+            <input className={s.input} readOnly={isView} aria-invalid={!!errors.youtube || undefined} {...register("youtube", optionalUrlRule)} />
           </Field>
-          <Field label="TikTok" readOnly={isView} error={errors.tiktok?.message}>
-            <input
-              className={s.input}
-              readOnly={isView}
-              aria-invalid={!!errors.tiktok || undefined}
-              {...register("tiktok", optionalUrlRule)}
-            />
+          <Field label="TikTok" error={errors.tiktok?.message}>
+            <input className={s.input} readOnly={isView} aria-invalid={!!errors.tiktok || undefined} {...register("tiktok", optionalUrlRule)} />
           </Field>
 
-          {/* Short description — اختياري */}
           <div style={{ gridColumn: "1 / -1" }}>
             <label className={s.label} htmlFor="shortDescription">Short description</label>
-            <textarea
-              id="shortDescription"
-              className={s.textarea}
-              readOnly={isView}
-              {...register("shortDescription")}
-            />
+            <textarea id="shortDescription" className={s.textarea} readOnly={isView} {...register("shortDescription")} />
           </div>
 
           <div className={s.actions}>
-            <button
-              type="button"
-              className={s.btn}
-              onClick={() => (closingAllowed || !isSubmitting) && onClose()}
-              disabled={isSubmitting && !closingAllowed}
-            >
+            <button type="button" className={s.btn} onClick={() => (closingAllowed || !isSubmitting) && onClose()} disabled={isSubmitting && !closingAllowed}>
               Cancel
             </button>
             {mode !== "view" && (
@@ -365,13 +302,11 @@ export default function BusinessCardModal({ open, mode, card, onClose, onSave }:
 function Field({
   label,
   required = false,
-  readOnly = false,
   error,
   children,
 }: {
   label: string;
   required?: boolean;
-  readOnly?: boolean;
   error?: string;
   children: React.ReactNode;
 }) {

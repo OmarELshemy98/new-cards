@@ -54,12 +54,7 @@ export default function BusinessCardsTable({ cards, setCards, userId }: Props) {
             <thead className={s.thead}>
               <tr>
                 {TABLE_COLUMNS.map(col => (
-                  <th
-                    key={col.key}
-                    className={`${s.th} ${col.key === "actions" ? s.thActions : ""}`}
-                  >
-                    {col.label}
-                  </th>
+                  <th key={col.key} className={s.th}>{col.label}</th>
                 ))}
               </tr>
             </thead>
@@ -75,10 +70,10 @@ export default function BusinessCardsTable({ cards, setCards, userId }: Props) {
                 >
                   <td className={s.td}><div>{c.name || "—"}</div></td>
                   <td className={s.td}><div>{c.title || "—"}</div></td>
-                  <td className={s.td}><div style={{ wordBreak: "break-all" }}>{c.email || "—"}</div></td>
+                  <td className={s.td}><div style={{wordBreak: "break-all"}}>{c.email || "—"}</div></td>
                   <td className={s.td}><div>{c.customerId || "—"}</div></td>
-                  <td className={s.td}><div style={{ wordBreak: "break-all" }}>{c.id}</div></td>
-                  <td className={`${s.td} ${s.tdActions}`}>
+                  <td className={s.td}><div style={{wordBreak:"break-all"}}>{c.id}</div></td>
+                  <td className={s.td}>
                     <div className={s.actions}>
                       <button
                         onClick={(e) => { e.stopPropagation(); openEdit(c); }}
