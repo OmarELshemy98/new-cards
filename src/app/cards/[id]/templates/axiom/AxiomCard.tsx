@@ -3,39 +3,26 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { toDataURL } from "qrcode";
+import * as QRCode from "qrcode"; // ⬅️ import آمن لأنواع TS
 import type { BrandTemplateProps } from "../index";
 import s from "@/styles/components/pages/cards/[id]/templates/axiom/AxiomCard.module.css";
 
-function PhoneGlyph() {
+/* glyphs كما هي */
+function PhoneGlyph() { /* ... نفس الكود */ 
   return (
     <svg viewBox="0 0 24 24" className={s.callGlyph} aria-hidden>
-      <path
-        stroke="currentColor"
-        strokeWidth="2"
-        fill="none"
-        d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.05 11.05 0 003.89.74 1 1 0 011 1v3.61a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.61a1 1 0 011 1c0 1.33.26 2.61.74 3.89a1 1 0 01-.21 1.11l-2.2 2.2z"
-      />
+      <path stroke="currentColor" strokeWidth="2" fill="none" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.05 11.05 0 003.89.74 1 1 0 011 1v3.61a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.61a1 1 0 011 1c0 1.33.26 2.61.74 3.89a1 1 0 01-.21 1.11l-2.2 2.2z"/>
     </svg>
   );
 }
-
-function DownloadGlyph() {
+function DownloadGlyph() { /* ... */ 
   return (
     <svg viewBox="0 0 24 24" className={s.downloadSvg} aria-hidden>
-      <path
-        stroke="currentColor"
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 4v12"
-      />
+      <path stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 4v12"/>
     </svg>
   );
 }
-
-function PlusGlyph() {
+function PlusGlyph() { /* ... */ 
   return (
     <svg viewBox="0 0 24 24" className={s.plusSvg} aria-hidden>
       <line x1="12" y1="6" x2="12" y2="18" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -44,6 +31,43 @@ function PlusGlyph() {
   );
 }
 
+/* helpers: vCard + download */
+const esc = (v?: string) => (v ?? "").trim().replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+function buildVCard(opts: {
+  name: string;
+  company?: string;
+  title?: string;
+  phones?: { value: string; type?: "CELL" | "WORK" | "HOME" }[];
+  email?: string;
+  website?: string;
+  address?: string;
+  note?: string;
+}) {
+  return [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `N:;${esc(opts.name)};;;`,
+    `FN:${esc(opts.name)}`,
+    opts.company ? `ORG:${esc(opts.company)}` : "",
+    opts.title ? `TITLE:${esc(opts.title)}` : "",
+    ...(opts.phones ?? []).filter(p => p.value).map(p => `TEL;TYPE=${p.type ?? "CELL"},VOICE:${esc(p.value)}`),
+    opts.email ? `EMAIL;TYPE=INTERNET,PREF:${esc(opts.email)}` : "",
+    opts.website ? `URL:${esc(opts.website)}` : "",
+    opts.address ? `ADR;TYPE=WORK:;;${esc(opts.address)};;;;` : "",
+    opts.note ? `NOTE:${esc(opts.note)}` : "",
+    "END:VCARD",
+  ].filter(Boolean).join("\n");
+}
+function downloadText(filename: string, text: string, mime = "text/vcard;charset=utf-8") {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* types الإضافية */
 type ExtraFields = {
   company?: string;
   address?: string;
@@ -53,8 +77,6 @@ type ExtraFields = {
   twitter?: string;
   youtube?: string;
   tiktok?: string;
-  vcfFilename?: string;
-  qrFilename?: string;
 };
 
 type BaseCard = BrandTemplateProps["card"];
@@ -64,10 +86,7 @@ export default function AxiomCard({ card, socials: _socials, ensureHttp }: Brand
   void _socials;
 
   const [overlayHidden, setOverlayHidden] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setOverlayHidden(true), 2000);
-    return () => clearTimeout(t);
-  }, []);
+  useEffect(() => { const t = setTimeout(() => setOverlayHidden(true), 2000); return () => clearTimeout(t); }, []);
 
   const c = card as CardWithExtras;
 
@@ -80,29 +99,12 @@ export default function AxiomCard({ card, socials: _socials, ensureHttp }: Brand
   const websiteHref = ensureHttp(c.website || "");
   const websiteText = (c.website || "").replace(/^https?:\/\//i, "");
   const address = c.address || "";
-  const description =
-    c.shortDescription ||
-    "Axiom — Modern digital identity. (Description missing in Firestore document)";
+  const description = c.shortDescription || "Axiom — Modern digital identity. (Description missing in Firestore document)";
 
   const orderedSocials = [
-    c.instagram && {
-      label: "Instagram",
-      href: ensureHttp(c.instagram),
-      src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
-      color: "#2563eb",
-    },
-    c.facebook && {
-      label: "Facebook",
-      href: ensureHttp(c.facebook),
-      src: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-      color: "#1d4ed8",
-    },
-    c.linkedin && {
-      label: "LinkedIn",
-      href: ensureHttp(c.linkedin),
-      src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
-      color: "#1e40af",
-    },
+    c.instagram && { label: "Instagram", href: ensureHttp(c.instagram), src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png", color: "#2563eb" },
+    c.facebook  && { label: "Facebook",  href: ensureHttp(c.facebook),  src: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg", color: "#1d4ed8" },
+    c.linkedin  && { label: "LinkedIn",  href: ensureHttp(c.linkedin),  src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png", color: "#1e40af" },
   ].filter(Boolean) as { label: string; href: string; src: string; color: string }[];
 
   const hasX = Boolean(c.twitter);
@@ -111,7 +113,7 @@ export default function AxiomCard({ card, socials: _socials, ensureHttp }: Brand
   async function onDownloadQR() {
     try {
       const profileUrl = `${window.location.origin}/cards/${c.id}`;
-      const dataUrl = await toDataURL(profileUrl, {
+      const dataUrl = await QRCode.toDataURL(profileUrl, {
         errorCorrectionLevel: "H",
         width: 512,
         margin: 2,
@@ -119,77 +121,44 @@ export default function AxiomCard({ card, socials: _socials, ensureHttp }: Brand
       });
       const a = document.createElement("a");
       a.href = dataUrl;
-      const filenameSafe = (name || "qr").replace(/\s+/g, "_");
-      a.download = `${filenameSafe}_QR.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (err) {
-      console.error(err);
+      a.download = `${(name || "qr").replace(/\s+/g, "_")}_QR.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch (e) {
+      console.error(e);
       alert("Failed to generate QR code. Please try again.");
     }
   }
 
+  // ✅ Add to contacts — vCard كاملة
   function onDownloadVcf() {
-    const vCard = `BEGIN:VCARD
-VERSION:3.0
-FN:${name}
-ORG:${company}
-TITLE:${title}
-TEL;TYPE=WORK,VOICE:${phone1}
-TEL;TYPE=HOME,VOICE:${phone2}
-EMAIL;TYPE=PREF,INTERNET:${email}
-${websiteHref ? `URL:${websiteHref}\n` : ""}
-${address ? `ADR;TYPE=WORK:;;${address.replace(/,/g, ";")};;;;\n` : ""}
-NOTE:${description}
-END:VCARD`;
-
-    const blob = new Blob([vCard], { type: "text/vcard;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${name.replace(/\s/g, "_") || "contact"}.vcf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    const vCard = buildVCard({
+      name, company, title,
+      phones: [
+        ...(phone1 ? [{ value: phone1, type: "CELL" as const }] : []),
+        ...(phone2 ? [{ value: phone2, type: "WORK" as const }] : []),
+      ],
+      email,
+      website: websiteHref,
+      address,
+      note: description,
+    });
+    downloadText(`${(name || "contact").replace(/\s+/g, "_")}.vcf`, vCard);
   }
 
   return (
     <div className={s.root}>
       {/* Banner */}
       <div className={s.banner} aria-hidden>
-        <Image
-          className={s.bannerImg}
-          src="/axiom-cards/image/header.jpg"
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 448px) 100vw, 448px"
-        />
+        <Image className={s.bannerImg} src="/axiom-cards/image/header.jpg" alt="" fill priority sizes="(max-width: 448px) 100vw, 448px" />
         <div className={s.avatarWrap}>
-          <Image
-            className={s.avatarImg}
-            src="/axiom-cards/image/logo.png"
-            alt="Profile"
-            width={128}
-            height={128}
-            priority
-          />
+          <Image className={s.avatarImg} src="/axiom-cards/image/logo.png" alt="Profile" width={128} height={128} priority />
         </div>
       </div>
 
-      {/* Landing overlay */}
+      {/* Overlay */}
       {!overlayHidden && (
         <div className={s.overlay} aria-hidden>
-          <Image
-            className={s.overlayImg}
-            src="/axiom-cards/image/landing-logo.png"
-            alt="Landing Logo"
-            width={192}
-            height={192}
-            priority
-          />
+          <Image className={s.overlayImg} src="/axiom-cards/image/landing-logo.png" alt="Landing Logo" width={192} height={192} priority />
         </div>
       )}
 
@@ -201,7 +170,7 @@ END:VCARD`;
           <div className={s.company}>{company}</div>
         </section>
 
-        {/* Icon Row */}
+        {/* Icons */}
         <div className={s.iconRow}>
           {phone1 && (
             <a className={s.iconBtn} href={`tel:${phone1}`} aria-label="Call phone 1">
@@ -233,43 +202,16 @@ END:VCARD`;
         <div className={s.stack}>
           <section className={s.contactCard}>
             <div className={s.contactHeader}>
-              <span className={s.contactIcon}>
-                <PhoneGlyph />
-              </span>
+              <span className={s.contactIcon}><PhoneGlyph /></span>
               <span className={s.contactTitle}>Contact Me</span>
             </div>
             <hr className={s.hr} />
-            {phone1 && (
-              <a className={s.contactLine} href={`tel:${phone1}`}>
-                <span className={s.contactLabel}>Call</span>
-                <br />
-                <span className={s.contactValue}>{phone1}</span>
-              </a>
-            )}
-            {phone2 && (
-              <a className={s.contactLine} href={`tel:${phone2}`}>
-                <span className={s.contactLabel}>Call</span>
-                <br />
-                <span className={s.contactValue}>{phone2}</span>
-              </a>
-            )}
-            {email && (
-              <a className={s.contactLine} href={`mailto:${email}`}>
-                <span className={s.contactLabel}>Email</span>
-                <br />
-                <span className={s.contactValue}>{email}</span>
-              </a>
-            )}
+            {phone1 && (<a className={s.contactLine} href={`tel:${phone1}`}><span className={s.contactLabel}>Call</span><br /><span className={s.contactValue}>{phone1}</span></a>)}
+            {phone2 && (<a className={s.contactLine} href={`tel:${phone2}`}><span className={s.contactLabel}>Call</span><br /><span className={s.contactValue}>{phone2}</span></a>)}
+            {email && (<a className={s.contactLine} href={`mailto:${email}`}><span className={s.contactLabel}>Email</span><br /><span className={s.contactValue}>{email}</span></a>)}
             {address && (
-              <a
-                className={s.contactLine}
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className={s.contactLabel}>Address</span>
-                <br />
-                <span className={s.contactValue}>{address}</span>
+              <a className={s.contactLine} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} target="_blank" rel="noreferrer">
+                <span className={s.contactLabel}>Address</span><br /><span className={s.contactValue}>{address}</span>
               </a>
             )}
           </section>
@@ -278,35 +220,27 @@ END:VCARD`;
             <section className={s.socialSection}>
               <h3 className={s.followTitle}>Follow Us</h3>
               <div className={s.socialGrid}>
-                {orderedSocials.map((soc) => (
+                {orderedSocials.map(soc => (
                   <a key={soc.label} className={s.socialItem} href={soc.href} target="_blank" rel="noreferrer">
                     <div className={s.socialLeft}>
                       <img src={soc.src} alt={soc.label} className={s.socialIcon} />
-                      <span className={s.socialName} style={{ color: soc.color }}>
-                        {soc.label}
-                      </span>
+                      <span className={s.socialName} style={{ color: soc.color }}>{soc.label}</span>
                     </div>
                     <svg xmlns="http://www.w3.org/2000/svg" className={s.arrowSvg} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                     </svg>
                   </a>
                 ))}
-
                 {hasX && (
                   <a className={s.socialItem} href={ensureHttp(c.twitter!)} target="_blank" rel="noreferrer">
                     <div className={s.socialLeft}>
-                      <span className={s.socialIcon} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "2.5rem", height: "2.5rem", color: "#000" }}>
+                      <span className={s.socialIcon} style={{ display:"flex",alignItems:"center",justifyContent:"center" }}>
+                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width:"2.5rem", height:"2.5rem", color:"#000" }}>
                           <rect width="120" height="120" rx="24" fill="white" />
-                          <path
-                            d="M86.4 32H99.2L72.8 61.12L103.2 96H81.6L62.56 74.08L40.8 96H28L56.16 65.12L27.2 32H49.12L66.08 51.36L86.4 32ZM82.56 89.44H88.8L48.16 38.08H41.6L82.56 89.44Z"
-                            fill="currentColor"
-                          />
+                          <path d="M86.4 32H99.2L72.8 61.12L103.2 96H81.6L62.56 74.08L40.8 96H28L56.16 65.12L27.2 32H49.12L66.08 51.36L86.4 32ZM82.56 89.44H88.8L48.16 38.08H41.6L82.56 89.44Z" fill="currentColor"/>
                         </svg>
                       </span>
-                      <span className={s.socialName} style={{ color: "#1e40af" }}>
-                        X
-                      </span>
+                      <span className={s.socialName} style={{ color:"#1e40af" }}>X</span>
                     </div>
                     <svg xmlns="http://www.w3.org/2000/svg" className={s.arrowSvg} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -317,14 +251,14 @@ END:VCARD`;
             </section>
           )}
 
+          {/* Website */}
           <section className={s.websiteCard}>
-            <a className={s.websiteLink} href={websiteHref} target="_blank" rel="noreferrer">
-              {websiteText}
-            </a>
+            <a className={s.websiteLink} href={websiteHref} target="_blank" rel="noreferrer">{websiteText}</a>
             <span className={s.websiteSub}>Description</span>
             <p className={s.websiteDesc}>{description}</p>
           </section>
 
+          {/* QR Download */}
           <div className={s.qrWrap}>
             <button type="button" className={s.qrBtn} onClick={onDownloadQR}>
               <DownloadGlyph /> Download QR
@@ -333,13 +267,24 @@ END:VCARD`;
         </div>
       </main>
 
-      {/* Floating Add-to-Contact — always visible now */}
+      {/* Add to Contacts */}
       <div className={s.fab}>
-        <button type="button" className={s.fabBtn} onClick={onDownloadVcf}>
+        <button type="button" className={s.fabBtn} onClick={() => {
+          const vCard = buildVCard({
+            name, company, title,
+            phones: [
+              ...(phone1 ? [{ value: phone1, type: "CELL" as const }] : []),
+              ...(phone2 ? [{ value: phone2, type: "WORK" as const }] : []),
+            ],
+            email,
+            website: websiteHref,
+            address,
+            note: description,
+          });
+          downloadText(`${(name || "contact").replace(/\s+/g, "_")}.vcf`, vCard);
+        }}>
           <span className={s.fabText}>Add to Contacts</span>
-          <span className={s.fabCircle}>
-            <PlusGlyph />
-          </span>
+          <span className={s.fabCircle}><PlusGlyph /></span>
         </button>
       </div>
     </div>
